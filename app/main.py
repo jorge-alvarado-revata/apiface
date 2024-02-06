@@ -73,12 +73,7 @@ async def create_file(
 
     #check si son las mismas personas
 
-
-
     is_same = face_recognition.compare_faces([image_1], image_2)[0]
-
-    
-    logging.warning('is_same', is_same)
 
     accuracy = 0.0
 
@@ -110,14 +105,12 @@ async def create_file(
 
     eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
     
-    mouth_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_mcs_mouth.xml')
 
     face = face_classifier.detectMultiScale(
         gray_imgA, scaleFactor=1.1, minNeighbors=5, minSize=(40, 40)
     )
 
     eyes = eye_cascade.detectMultiScale(gray_imgA, 1.3, 5)
-    mouth = mouth_cascade.detectMultiScale(gray_imgA, 1.5, 11)
 
     has_human = len(face)
 
@@ -129,8 +122,6 @@ async def create_file(
     for(ex, ey, ew, eh) in eyes:
         cv2.rectangle(gray_imgA,(ex, ey), (ex+ew, ey+eh), (0, 255, 0), 2)
 
-    for(mx, my, mw, mh) in mouth:
-        cv2.rectangle(gray_imgA, (mx, my), (mx+mw, my+mh), (255, 0, 0), 2)
 
     img_rgb = cv2.cvtColor(gray_imgA, cv2.COLOR_BGR2RGB)
 
