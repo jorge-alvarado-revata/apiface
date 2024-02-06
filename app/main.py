@@ -90,7 +90,7 @@ async def create_file(
         is_same = False
 
     return {
-        "same": f"{is_same}",
+        "is_same": f"{is_same}",
         "accuracy": f"{accuracy}"
     }
 
@@ -108,14 +108,29 @@ async def create_file(
 
     face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
+    eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+    
+    mouth_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_mcs_mouth.xml')
+
     face = face_classifier.detectMultiScale(
         gray_imgA, scaleFactor=1.1, minNeighbors=5, minSize=(40, 40)
     )
 
+    eyes = eye_cascade.detectMultiScale(gray_imgA, 1.3, 5)
+    mouth = mouth_cascade.detectMultiScale(gray_imgA, 1.5, 11)
+
     has_human = len(face)
+
+
 
     for (x, y, w, h) in face:
         cv2.rectangle(gray_imgA, (x, y), (x + w, y + h), (0, 255, 0), 4)
+
+    for(ex, ey, ew, eh) in eyes:
+        cv2.rectangle(gray_imgA,(ex, ey), (ex+ew, ey+eh), (0, 255, 0), 2)
+
+    for(mx, my, mw, mh) in mouth:
+        cv2.rectangle(gray_imgA, (mx, my), (mx+mw, my+mh), (255, 0, 0), 2)
 
     img_rgb = cv2.cvtColor(gray_imgA, cv2.COLOR_BGR2RGB)
 
@@ -124,7 +139,6 @@ async def create_file(
     encoded_img = base64.b64encode(encoded_img)
 
     return {
-        "file_sizeA": imgA_cv2.shape,
         "content": encoded_img,
-        "human": has_human
+        "has_person": has_human
     }
