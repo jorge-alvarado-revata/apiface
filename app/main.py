@@ -44,17 +44,6 @@ class ComparaImage(BaseModel):
 
 
 
-@app.post("/comparison/")
-async def post_compasison(item: ComparaImage):
-    item.result = 60.6
-    results = {"status_code":200, "status_result": "OK.", "result": item }
-    return results
-
-@app.get("/detection/{url_foto}")
-async def face_compasison():
-    results = {"status_code":200, "status_result": "OK." }
-    return results
-
 def find_face_encoding(image):
     face_enc = face_recognition.face_encodings(image)
     return face_enc[0]
@@ -84,17 +73,21 @@ async def create_file(
 
     #check si son las mismas personas
 
+
+
     is_same = face_recognition.compare_faces([image_1], image_2)[0]
 
     
     logging.warning('is_same', is_same)
 
     accuracy = 0.0
+
     if is_same:
         distance = face_recognition.face_distance([image_1], image_2)
         distance = round(distance[0] * 100)
         accuracy = 100 - round(distance)
-
+    else:
+        is_same = False
 
     return {
         "same": f"{is_same}",
@@ -132,7 +125,6 @@ async def create_file(
 
     return {
         "file_sizeA": imgA_cv2.shape,
-        "eval": 0.0,
         "content": encoded_img,
         "human": has_human
     }
